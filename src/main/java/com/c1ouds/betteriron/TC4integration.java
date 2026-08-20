@@ -1,10 +1,9 @@
 package com.c1ouds.betteriron;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-
 import com.c1ouds.betteriron.utility.ItemMetaKey;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.common.config.ConfigItems;
@@ -34,7 +33,7 @@ public class TC4integration {
     }
 
     public static void addIron() {
-        BetterIron.ironItems.add(new ItemMetaKey(new ItemStack(ConfigItems.itemNugget, 1, 16)));
+        Config.ironItems.add(new ItemMetaKey(new ItemStack(ConfigItems.itemNugget, 1, 16)));
         System.out.println("[BetterIron] Added ironCluster to iron list");
     }
 }

@@ -1,6 +1,6 @@
 package com.c1ouds.betteriron.mixins;
 
-import static com.c1ouds.betteriron.BetterIron.ironItems;
+import static com.c1ouds.betteriron.Config.ironItems;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;

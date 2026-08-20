@@ -1,9 +1,8 @@
 package com.c1ouds.betteriron;
 
 import static com.c1ouds.betteriron.BetterIron.instance;
-import static com.c1ouds.betteriron.BetterIron.ironItems;
-
-import java.util.HashSet;
+import static com.c1ouds.betteriron.Config.ironItems;
+import com.c1ouds.betteriron.utility.ItemMetaKey;
 
 import com.c1ouds.betteriron.IronFurnace.IronFurnaceBlock;
 import com.c1ouds.betteriron.IronFurnace.IronFurnaceTE;
@@ -13,9 +12,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-
-import com.c1ouds.betteriron.utility.ItemMetaKey;
-
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -25,19 +21,20 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
+import java.util.HashSet;
+
 public class CommonProxy {
 
-    final static public int iron_toolDurability = 400;
-    final static public int iron_armorDurability = 20;
+    final static int iron_toolDurability = 400;
+    final static int iron_armorDurability = 20;
     private boolean TC4 = false;
+
     public static IronFurnaceBlock iron_furnace;
 
-    // preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
-    // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
 
-        BetterIron.LOG.info(Config.greeting);
+        //BetterIron.LOG.info(Config.greeting);
         BetterIron.LOG.info("I am BetterIron at version " + Tags.VERSION);
 
         try {

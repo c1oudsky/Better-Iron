@@ -60,18 +60,9 @@ public class IronFurnaceGUI extends GuiContainer {
     }
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        // 1. Берем имя инвентаря, которое мы прописали в TileEntity (метод getInventoryName)
-        // net.minecraft.util.StatCollector.translateToLocal красиво переведет его, если есть языковой файл,
-        // а если файла нет — просто выведет текст "container.lavFurnace" как есть.
         var tileFurnace = ((IronFurnaceContainer)this.inventorySlots).furnaceTE;
         String s = StatCollector.translateToLocal(tileFurnace.getInventoryName());
-
-        // Рисуем название печки сверху.
-        // Координата X=8 (от левого края окна), Y=6 (от верхнего края окна).
-        // Число 4210752 — это код фирменного темно-серого цвета текста в ванильных интерфейсах.
-        this.fontRendererObj.drawString(s, 8, 6, 4210752);
-
-        // 2. Дополнительно рисуем надпись "Инвентарь" прямо над карманами игрока для ванильного стиля
+        this.fontRendererObj.drawString(s, (this.xSize - this.fontRendererObj.getStringWidth(s)) / 2, 6, 4210752);
         this.fontRendererObj.drawString(
             net.minecraft.util.StatCollector.translateToLocal("container.inventory"),
             8,

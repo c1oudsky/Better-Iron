@@ -17,7 +17,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 public class IronFurnaceBlock extends BlockContainer {
-    @SideOnly(Side.CLIENT) public IIcon[] textures = new IIcon[4];
+    public IIcon[] textures = new IIcon[4];
 
     public IronFurnaceBlock() {
         super(Material.rock);
@@ -86,9 +86,6 @@ public class IronFurnaceBlock extends BlockContainer {
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
         if (world.isRemote) return true;
         if (world.getTileEntity(x, y, z) instanceof IronFurnaceTE)
-            // Forge сам откроет Контейнер на сервере, Gui на клиенте,
-            // и автоматически нарисует инвентарь игрока снизу!
-            // ID интерфейса ставим 0 (так как он у нас один)
             player.openGui(BetterIron.instance, 0, world, x, y, z);
 
         return true;
