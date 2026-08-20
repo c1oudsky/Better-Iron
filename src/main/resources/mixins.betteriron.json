@@ -1,0 +1,9 @@
+{
+  "package": "com.c1ouds.betteriron.mixins",
+  "refmap": "mixins.betteriron.refmap.json",
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "FurnaceTE"
+  ]
+}
