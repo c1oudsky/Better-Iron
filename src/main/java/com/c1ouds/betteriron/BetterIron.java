@@ -23,7 +23,6 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 public class BetterIron {
     @Mod.Instance(BetterIron.MODID) public static BetterIron instance;
 
-    static public Set<ItemMetaKey> ironItems;
     public static final String MODID = "betteriron";
     public static final Logger LOG = LogManager.getLogger(MODID);
 
