@@ -1,18 +1,17 @@
 package com.c1ouds.betteriron;
 
-import static com.c1ouds.betteriron.BetterIron.instance;
-import static com.c1ouds.betteriron.Config.ironItems;
 import com.c1ouds.betteriron.utility.ItemMetaKey;
-
 import com.c1ouds.betteriron.IronFurnace.IronFurnaceBlock;
 import com.c1ouds.betteriron.IronFurnace.IronFurnaceTE;
+import static com.c1ouds.betteriron.Config.iron_armorDurability;
+import static com.c1ouds.betteriron.Config.iron_toolDurability;
+
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -24,11 +23,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import java.util.HashSet;
 
 public class CommonProxy {
-
-    final static int iron_toolDurability = 400;
-    final static int iron_armorDurability = 20;
-    private boolean TC4 = false;
-
     public static IronFurnaceBlock iron_furnace;
 
     public void preInit(FMLPreInitializationEvent event) {
@@ -58,41 +52,29 @@ public class CommonProxy {
         }
     }
 
-    // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
     public void init(FMLInitializationEvent event) {
-        try {
-            java.lang.reflect.Field refField = ReflectionHelper.findField(Item.class, "maxDamage", "field_77699_b");
-            refField.setAccessible(true);
-            refField.setInt(net.minecraft.init.Items.iron_pickaxe, iron_toolDurability);
-            refField.setInt(net.minecraft.init.Items.iron_sword, iron_toolDurability);
-            refField.setInt(net.minecraft.init.Items.iron_axe, iron_toolDurability);
-            refField.setInt(net.minecraft.init.Items.iron_shovel, iron_toolDurability);
-            refField.setInt(net.minecraft.init.Items.iron_hoe, iron_toolDurability);
-            refField.setInt(Items.shears, iron_toolDurability);
+        Item[] items = { Items.iron_pickaxe, Items.iron_sword, Items.iron_axe, Items.iron_shovel, Items.iron_hoe, Items.shears };
+        for (Item tool : items) tool.setMaxDamage(iron_toolDurability);
+        Item[] armor = { Items.iron_helmet, Items.iron_chestplate, Items.iron_leggings, Items.iron_boots };
+        var iron = ItemArmor.ArmorMaterial.IRON;
+        for (int i = 0; i < armor.length; i++) armor[i].setMaxDamage(iron.getDurability(i));
 
-            Item[] armor = { Items.iron_helmet, Items.iron_chestplate, Items.iron_leggings, Items.iron_boots };
-            var iron = ItemArmor.ArmorMaterial.IRON;
-            for (int i = 0; i < 4; i++) {
-                refField.setInt(armor[i], iron.getDurability(i));
-            }
+        Blocks.coal_ore.setHardness(Config.coalOreHardness);
+        Items.golden_pickaxe.setHarvestLevel("pickaxe", Config.goldPickaxeLevel);
 
-            System.out.println("[BetterIron] Vanilla items iron values rewritten successfully.");
-        } catch (Exception e) {
-            System.out.println("[BetterIron] Couldn't rewrite vanilla items iron values.");
-            e.printStackTrace();
+        Config.ironItems = new HashSet<ItemMetaKey>();
+        Config.ironItems.add(new ItemMetaKey(Item.getItemFromBlock(Blocks.iron_ore)));
+        if (BetterIron.TC4) {
+            TC4integration.applyThaumiumValue();
+            TC4integration.addIron();
         }
 
-        if (Loader.isModLoaded("Thaumcraft")) {
-            System.out.println("[BetterIron] Thaumcraft detected"); TC4 = true;
-            TC4integration.applyThaumiumValue();
-        } else System.out.println("[BetterIron] Thaumcraft not detected");
-
-        NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GuiHandler());
+        NetworkRegistry.INSTANCE.registerGuiHandler(BetterIron.instance, new GuiHandler());
         iron_furnace = new IronFurnaceBlock();
         GameRegistry.registerBlock(iron_furnace, "iron_furnace");
         GameRegistry.registerTileEntity(IronFurnaceTE.class, "betteriron:iron_furnace_tileentity");
         GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(iron_furnace, 1),
-    "BCB",
+   "BCB",
             "bFb",
             "BCB",
             'F', Blocks.furnace, 'B', "blockBronze", 'C', "blockCopper", 'b', Blocks.brick_block));
@@ -100,9 +82,6 @@ public class CommonProxy {
 
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
     public void postInit(FMLPostInitializationEvent event) {
-        ironItems = new HashSet<ItemMetaKey>();
-        ironItems.add(new ItemMetaKey(Item.getItemFromBlock(Blocks.iron_ore)));
-        if(TC4) TC4integration.addIron();
     }
 
     // register server commands in this event handler (Remove if not needed)

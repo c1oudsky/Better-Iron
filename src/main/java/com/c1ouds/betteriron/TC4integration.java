@@ -1,6 +1,7 @@
 package com.c1ouds.betteriron;
 
 import com.c1ouds.betteriron.utility.ItemMetaKey;
+import static com.c1ouds.betteriron.Config.thaumium_toolDurability;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -10,20 +11,13 @@ import thaumcraft.common.config.ConfigItems;
 
 public class TC4integration {
 
-    final static public int toolDurability = 700;
-
     public static void applyThaumiumValue() {
         try {
             Item.ToolMaterial Thaumium = ThaumcraftApi.toolMatThaumium;
-
             ReflectionHelper.setPrivateValue(Item.ToolMaterial.class, Thaumium, 700, "maxUses", "field_78002_g");
-            java.lang.reflect.Field refField = ReflectionHelper.findField(Item.class, "maxDamage", "field_77699_b");
-            refField.setAccessible(true);
-            refField.setInt(ConfigItems.itemPickThaumium, toolDurability);
-            refField.setInt(ConfigItems.itemSwordThaumium, toolDurability);
-            refField.setInt(ConfigItems.itemAxeThaumium, toolDurability);
-            refField.setInt(ConfigItems.itemShovelThaumium, toolDurability);
-            refField.setInt(ConfigItems.itemHoeThaumium, toolDurability);
+
+            Item[] tools = {ConfigItems.itemPickThaumium, ConfigItems.itemSwordThaumium, ConfigItems.itemAxeThaumium, ConfigItems.itemShovelThaumium, ConfigItems.itemHoeThaumium};
+            for(Item tool : tools) tool.setMaxDamage(thaumium_toolDurability);
 
             System.out.println("[BetterIron] Thaumium material values set successfully.");
         } catch (Exception e) {

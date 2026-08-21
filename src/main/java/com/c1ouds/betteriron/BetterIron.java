@@ -1,11 +1,7 @@
 package com.c1ouds.betteriron;
 
-import java.util.Set;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import com.c1ouds.betteriron.utility.ItemMetaKey;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -22,9 +18,10 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
     dependencies = "after:Thaumcraft")
 public class BetterIron {
     @Mod.Instance(BetterIron.MODID) public static BetterIron instance;
-
     public static final String MODID = "betteriron";
     public static final Logger LOG = LogManager.getLogger(MODID);
+
+    static public boolean TC4;
 
     @SidedProxy(clientSide = "com.c1ouds.betteriron.ClientProxy", serverSide = "com.c1ouds.betteriron.CommonProxy")
     public static CommonProxy proxy;
