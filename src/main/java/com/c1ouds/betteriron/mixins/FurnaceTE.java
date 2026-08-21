@@ -22,7 +22,6 @@ public abstract class FurnaceTE {
 
     @Inject(method = "canSmelt()Z", at = @At("HEAD"), cancellable = true, remap = true)
     public void onCanSmelt(CallbackInfoReturnable<Boolean> cir) {
-        System.out.println("[BetterIron] I'm injected!");
         ItemStack input = this.getStackInSlot(0);
         if (input != null && ironItems.contains(new ItemMetaKey(input))) {
             if (this.isBurning()) {
