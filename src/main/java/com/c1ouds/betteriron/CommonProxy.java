@@ -7,7 +7,9 @@ import static com.c1ouds.betteriron.Config.iron_armorDurability;
 import static com.c1ouds.betteriron.Config.iron_toolDurability;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -82,6 +84,13 @@ public class CommonProxy {
 
     // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
     public void postInit(FMLPostInitializationEvent event) {
+        if (Config.PicksForGlass) {
+            for (Object obj : GameData.getBlockRegistry()) {
+                Block block = (Block) obj;
+                if (block.getMaterial() == net.minecraft.block.material.Material.glass)
+                    block.setHarvestLevel("pickaxe", 0);
+            }
+        }
     }
 
     // register server commands in this event handler (Remove if not needed)
