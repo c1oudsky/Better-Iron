@@ -62,9 +62,14 @@ public class IronFurnaceContainer extends Container {
     }
 
     @Override
+    public void addCraftingToCrafters(net.minecraft.inventory.ICrafting icrafting) {
+        super.addCraftingToCrafters(icrafting);
+        icrafting.sendProgressBarUpdate(this, 0, this.furnaceTE.cookProgress);
+        icrafting.sendProgressBarUpdate(this, 1, this.furnaceTE.heat);
+    }
+    @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
-
         for (ICrafting crafter : this.crafters) {
             if (this.lastCookProgress != this.furnaceTE.cookProgress)
                 // ID 0: cookProgress
@@ -81,11 +86,5 @@ public class IronFurnaceContainer extends Container {
     public void updateProgressBar(int id, int data) {
         if (id == 0) this.furnaceTE.cookProgress = data;
         if (id == 1) this.furnaceTE.heat = data;
-    }
-    @Override
-    public void addCraftingToCrafters(net.minecraft.inventory.ICrafting icrafting) {
-        super.addCraftingToCrafters(icrafting);
-        icrafting.sendProgressBarUpdate(this, 0, this.furnaceTE.cookProgress);
-        icrafting.sendProgressBarUpdate(this, 1, this.furnaceTE.heat);
     }
 }

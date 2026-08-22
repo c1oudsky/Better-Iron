@@ -81,11 +81,11 @@ public class IronFurnaceTE extends TileEntity implements IInventory {
     }
     @Override public void openInventory() {}
     @Override public void closeInventory() {}
+
     @Override
     public boolean isItemValidForSlot(int index, ItemStack stack) {
         return index < 1;
     }
-    public boolean isHeated() {return false;}
 
     @Override
     public void updateEntity() {
@@ -198,7 +198,10 @@ public class IronFurnaceTE extends TileEntity implements IInventory {
     @Override
     public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
         NBTTagCompound nbt = pkt.func_148857_g();
-        this.isHeated = nbt.getBoolean("IsHeated");
-        if (this.worldObj != null) this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+        boolean receivedValue = nbt.getBoolean("IsHeated");
+        if(this.isHeated != receivedValue && this.worldObj != null) {
+            this.isHeated = receivedValue;
+            this.worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+        }
     }
 }
