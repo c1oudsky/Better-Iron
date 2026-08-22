@@ -11,9 +11,11 @@ public class Config {
 
     static public int iron_toolDurability;
     static public int iron_armorDurability;
+    static public int iron_armorEnchantability;
     static public int thaumium_toolDurability;
+    static public float gold_swordDamage;
     static public Set<ItemMetaKey> ironItems;
-    static public float coalOreHardness = 3.0F;
+    static public float coalOreHardness;
     static public int goldPickaxeLevel;
     static public boolean PicksForGlass;
 
@@ -28,6 +30,11 @@ public class Config {
             400, 1, Short.MAX_VALUE, "vanilla: 250");
         iron_armorDurability = configuration.getInt("iron_armorDurability", Configuration.CATEGORY_GENERAL,
             20, 1, Short.MAX_VALUE, "vanilla: 15");
+        iron_armorEnchantability = configuration.getInt("iron_armorEnchantability", Configuration.CATEGORY_GENERAL,
+            14, 0, Short.MAX_VALUE, "default value is vanilla");
+        gold_swordDamage = configuration.getFloat("gold_swordDamage", Configuration.CATEGORY_GENERAL,
+            BetterIron.TC4 ? 7 : 4, 4f, Short.MAX_VALUE,
+            "Golden sword is set to diamond tier damage (7.0) if thaumcraft is present to balance gold tier. Vanilla value is 4.0.");
         if (BetterIron.TC4) thaumium_toolDurability = configuration.getInt("thaumium_toolDurability",
             "Thaumcraft", 700, 0, Short.MAX_VALUE,
             "Set to 700 by default comparing to iron 400. (for comparison: elemental and diamond tiers are ~1500) Vanilla value is 400.");
@@ -36,7 +43,7 @@ public class Config {
             3.0F, 0.1F, 20.0F,"Default value is vanilla");
         goldPickaxeLevel = configuration.getInt("goldPickaxeLevel", Configuration.CATEGORY_GENERAL,
             BetterIron.TC4 ? 3 : 0, 0, 3,
-            "Gold pickaxe is set to be able to mine everything if thaumcraft is present to balance gold tier. Vanilla value is 0.");
+            "Golden pickaxe is set to diamond harvest level (3) if thaumcraft is present to balance gold tier. Vanilla value is 0.");
         PicksForGlass = configuration.getBoolean("assignPickaxesForGlass", Configuration.CATEGORY_GENERAL, true,
             "Assigns pickaxe as effecient tool type for all blocks with glass material. Vanilla valus is false");
 

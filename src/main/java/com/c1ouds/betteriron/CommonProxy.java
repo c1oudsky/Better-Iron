@@ -20,6 +20,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
 import java.util.HashSet;
@@ -29,27 +30,36 @@ public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
-
-        //BetterIron.LOG.info(Config.greeting);
-        BetterIron.LOG.info("I am BetterIron at version " + Tags.VERSION);
+        //BetterIron.LOG.info("I am BetterIron at version " + Tags.VERSION);
 
         try {
             java.lang.reflect.Field refField = ReflectionHelper
                 .findField(Item.ToolMaterial.class, "maxUses", "field_78002_g");
-            refField.setAccessible(true);
             refField.setInt(Item.ToolMaterial.IRON, iron_toolDurability);
 
             refField = ReflectionHelper.findField(Item.ToolMaterial.class, "enchantability", "field_78008_j");
-            refField.setAccessible(true);
-            refField.setInt(Item.ToolMaterial.IRON, 12); // было 14
+            refField.setInt(Item.ToolMaterial.IRON, Config.iron_armorEnchantability);
 
             refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "maxDamageFactor", "field_78048_f");
-            refField.setAccessible(true);
             refField.setInt(ItemArmor.ArmorMaterial.IRON, iron_armorDurability);
 
             System.out.println("[BetterIron] Iron material values set successfully.");
         } catch (Exception e) {
             System.out.println("[BetterIron] Couldn't set iron material values.");
+            e.printStackTrace();
+        }
+        if(Config.gold_swordDamage != 4.0f) try {
+            java.lang.reflect.Field refField = ReflectionHelper.findField(Item.ToolMaterial.class, "damageVsEntity", "field_78011_i");
+            refField.setFloat(Item.ToolMaterial.GOLD, Config.gold_swordDamage - 4);
+
+            refField = ReflectionHelper.findField(net.minecraft.item.ItemSword.class, "field_150934_a");
+            refField.setFloat(Items.golden_sword, Config.gold_swordDamage);
+
+            MinecraftForge.EVENT_BUS.register(new modEventHandler());
+
+            System.out.println("[BetterIron] Gold material damage values set successfully.");
+        } catch (Exception e) {
+            System.out.println("[BetterIron] Couldn't set gold material damage values.");
             e.printStackTrace();
         }
     }
@@ -82,7 +92,6 @@ public class CommonProxy {
             'F', Blocks.furnace, 'B', "blockBronze", 'C', "blockCopper", 'b', Blocks.brick_block));
     }
 
-    // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
     public void postInit(FMLPostInitializationEvent event) {
         if (Config.PicksForGlass) {
             for (Object obj : GameData.getBlockRegistry()) {
@@ -93,6 +102,5 @@ public class CommonProxy {
         }
     }
 
-    // register server commands in this event handler (Remove if not needed)
     public void serverStarting(FMLServerStartingEvent event) {}
 }
