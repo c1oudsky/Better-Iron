@@ -39,7 +39,7 @@ public class Config {
             BetterIron.TC4 ? 7 : 4, 4f, Short.MAX_VALUE,
             "Golden sword is set to diamond tier damage (7.0) if thaumcraft is present to balance gold tier. Vanilla value is 4.0.");
         fixPigmenDmg = configuration.getBoolean("ZombiePigmenDamageStaysTheSame", Configuration.CATEGORY_GENERAL,
-            true, "Tweak Zombie Pigmen's damage so it stays the same even if you change golden swords' damage." +
+            false, "Tweak Zombie Pigmen's damage so it stays the same even if you change golden swords' damage." +
                 " If set to false, Zombie Pigmen's damage will depend on golden sword set damage value. (Note: with golden sword damage changed " +
                 "and this set to true, already spawned pigmen will retain their altered damage even if you disable the features or delete the mod.)");
         chain_armorProtection = configuration.get(Configuration.CATEGORY_GENERAL, "chain_armorProtection", new int[] {2,5,4,1},
