@@ -14,6 +14,8 @@ public class Config {
     static public int iron_armorEnchantability;
     static public int thaumium_toolDurability;
     static public float gold_swordDamage;
+    static public int[] chain_armorProtection;
+    static public int chain_armorEnchantability;
     static public Set<ItemMetaKey> ironItems;
     static public float coalOreHardness;
     static public int goldPickaxeLevel;
@@ -31,10 +33,14 @@ public class Config {
         iron_armorDurability = configuration.getInt("iron_armorDurability", Configuration.CATEGORY_GENERAL,
             20, 1, Short.MAX_VALUE, "vanilla: 15");
         iron_armorEnchantability = configuration.getInt("iron_armorEnchantability", Configuration.CATEGORY_GENERAL,
-            14, 0, Short.MAX_VALUE, "default value is vanilla");
+            14, 0, Short.MAX_VALUE, "Default value is vanilla");
         gold_swordDamage = configuration.getFloat("gold_swordDamage", Configuration.CATEGORY_GENERAL,
             BetterIron.TC4 ? 7 : 4, 4f, Short.MAX_VALUE,
             "Golden sword is set to diamond tier damage (7.0) if thaumcraft is present to balance gold tier. Vanilla value is 4.0.");
+        chain_armorProtection = configuration.get(Configuration.CATEGORY_GENERAL, "chain_armorProtection", new int[] {2,5,4,1},
+            "Default values are vanilla").getIntList();
+        chain_armorEnchantability = configuration.getInt("chain_armorEnchantability", Configuration.CATEGORY_GENERAL,
+            12, 0, Short.MAX_VALUE, "Default value is vanilla");
         if (BetterIron.TC4) thaumium_toolDurability = configuration.getInt("thaumium_toolDurability",
             "Thaumcraft", 700, 0, Short.MAX_VALUE,
             "Set to 700 by default comparing to iron 400. (for comparison: elemental and diamond tiers are ~1500) Vanilla value is 400.");

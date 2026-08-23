@@ -23,10 +23,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 public class CommonProxy {
     public static IronFurnaceBlock iron_furnace;
+
+    private boolean chainPr=false;
 
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
@@ -62,14 +65,43 @@ public class CommonProxy {
             System.out.println("[BetterIron] Couldn't set gold material damage values.");
             e.printStackTrace();
         }
+        if(!Arrays.equals(Config.chain_armorProtection, new int[]{2, 5, 4, 1})) {
+            if (Config.chain_armorProtection.length == 4) chainPr = true;
+            else System.out.println("[BetterIron] Chainmail material protection values in config are incorrect (needs to be 4 integers).");
+        }
+        if(chainPr || Config.chain_armorEnchantability != 12) try {
+            if(chainPr) {
+                java.lang.reflect.Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "damageReductionAmountArray", "field_78049_g");
+                refField.set(ItemArmor.ArmorMaterial.CHAIN, Config.chain_armorProtection);
+            }
+            if(Config.chain_armorEnchantability != 12) {
+                java.lang.reflect.Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "enchantability", "field_78055_h");
+                refField.setInt(ItemArmor.ArmorMaterial.CHAIN, Config.chain_armorEnchantability);
+            }
+            System.out.println("[BetterIron] Chainmail material protection (1/2) and enchantability values set successfully.");
+        } catch (Exception e) {
+            System.out.println("[BetterIron] Couldn't set chainmail material protection (1/2) and enchantability values.");
+            e.printStackTrace();
+        }
     }
 
     public void init(FMLInitializationEvent event) {
         Item[] items = { Items.iron_pickaxe, Items.iron_sword, Items.iron_axe, Items.iron_shovel, Items.iron_hoe, Items.shears };
         for (Item tool : items) tool.setMaxDamage(iron_toolDurability);
         Item[] armor = { Items.iron_helmet, Items.iron_chestplate, Items.iron_leggings, Items.iron_boots };
-        var iron = ItemArmor.ArmorMaterial.IRON;
-        for (int i = 0; i < armor.length; i++) armor[i].setMaxDamage(iron.getDurability(i));
+        var material = ItemArmor.ArmorMaterial.IRON;
+        for (int i = 0; i < armor.length; i++) armor[i].setMaxDamage(material.getDurability(i));
+
+        if(chainPr) try {
+            java.lang.reflect.Field refField = ReflectionHelper.findField(ItemArmor.class, "damageReduceAmount", "field_77879_b");
+            armor = new Item[] {Items.chainmail_helmet, Items.chainmail_chestplate, Items.chainmail_leggings, Items.chainmail_boots};
+            material = ItemArmor.ArmorMaterial.CHAIN;
+            for (int i = 0; i < armor.length; i++) refField.setInt(armor[i], material.getDamageReductionAmount(i));
+            System.out.println("[BetterIron] Chainmail armor protection values (2/2) set successfully.");
+        } catch (Exception e) {
+            System.out.println("[BetterIron] Couldn't set chainmail armor protection values (2/2).");
+            e.printStackTrace();
+        }
 
         Blocks.coal_ore.setHardness(Config.coalOreHardness);
         Items.golden_pickaxe.setHarvestLevel("pickaxe", Config.goldPickaxeLevel);
