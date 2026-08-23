@@ -58,7 +58,7 @@ public class CommonProxy {
             refField = ReflectionHelper.findField(net.minecraft.item.ItemSword.class, "field_150934_a");
             refField.setFloat(Items.golden_sword, Config.gold_swordDamage);
 
-            MinecraftForge.EVENT_BUS.register(new modEventHandler());
+            if(Config.fixPigmenDmg) MinecraftForge.EVENT_BUS.register(new modEventHandler());
 
             System.out.println("[BetterIron] Gold material damage values set successfully.");
         } catch (Exception e) {
