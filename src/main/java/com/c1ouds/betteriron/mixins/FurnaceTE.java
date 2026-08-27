@@ -20,7 +20,7 @@ public abstract class FurnaceTE {
     @Shadow public abstract ItemStack getStackInSlot(int slot);
     @Shadow public abstract boolean isBurning();
 
-    @Inject(method = "canSmelt()Z", at = @At("HEAD"), cancellable = true, remap = true)
+    @Inject(method = "canSmelt", at = @At("HEAD"), cancellable = true, remap = true)
     public void onCanSmelt(CallbackInfoReturnable<Boolean> cir) {
         ItemStack input = this.getStackInSlot(0);
         if (input != null && ironItems.contains(new ItemMetaKey(input))) {

@@ -21,6 +21,7 @@ public class Config {
     static public float coalOreHardness;
     static public int goldPickaxeLevel;
     static public boolean PicksForGlass;
+    static public double MinecartSpeed;
 
     public static void synchronizeConfiguration(File configFile) {
         Configuration configuration = new Configuration(configFile);
@@ -57,6 +58,8 @@ public class Config {
             "Golden pickaxe is set to diamond harvest level (3) if thaumcraft is present to balance gold tier. Vanilla value is 0.");
         PicksForGlass = configuration.getBoolean("assignPickaxesForGlass", Configuration.CATEGORY_GENERAL, true,
             "Assigns pickaxe as effecient tool type for all blocks with glass material. Vanilla valus is false");
+        MinecartSpeed = configuration.getFloat("MinecartsSpeed", Configuration.CATEGORY_GENERAL, 0.4F, 0.1F, 0.75F,
+            "Minecarts' maximum speed (values in [3.999, 4.001] range won't change it from vanilla behavior). Powered rails acceleration is tweaked accordingly.");
 
         if (configuration.hasChanged()) {
             configuration.save();
