@@ -10,6 +10,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -125,11 +126,13 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent event) {
-        if (Config.PicksForGlass) {
+        if (Config.PicksForGlass || Config.ForgeAxeForWood) {
             for (Object obj : GameData.getBlockRegistry()) {
                 Block block = (Block) obj;
-                if (block.getMaterial() == net.minecraft.block.material.Material.glass)
+                if (Config.PicksForGlass && block.getMaterial() == Material.glass)
                     block.setHarvestLevel("pickaxe", 0);
+                else if (Config.ForgeAxeForWood && block.getMaterial() == Material.wood)
+                    block.setHarvestLevel("axe", 0);
             }
         }
     }
