@@ -36,7 +36,7 @@ public class IronFurnaceBlock extends BlockContainer {
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
         int l = MathHelper.floor_double((double)(placer.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
-        //(2 - север, 3 - юг, 4 - запад, 5 - восток)
+        //(2 - north, 3 - south, 4 - west, 5 - east)
         if (l == 0) world.setBlockMetadataWithNotify(x, y, z, 2, 2);
         if (l == 1) world.setBlockMetadataWithNotify(x, y, z, 5, 2);
         if (l == 2) world.setBlockMetadataWithNotify(x, y, z, 3, 2);

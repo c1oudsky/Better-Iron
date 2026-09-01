@@ -3,8 +3,6 @@ package com.c1ouds.betteriron;
 import com.c1ouds.betteriron.utility.ItemMetaKey;
 import com.c1ouds.betteriron.IronFurnace.IronFurnaceBlock;
 import com.c1ouds.betteriron.IronFurnace.IronFurnaceTE;
-import static com.c1ouds.betteriron.Config.iron_armorDurability;
-import static com.c1ouds.betteriron.Config.iron_toolDurability;
 
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameData;
@@ -24,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -31,29 +30,33 @@ public class CommonProxy {
     public static IronFurnaceBlock iron_furnace;
 
     private boolean chainPr=false;
+    private boolean goldPr=false;
 
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
         //BetterIron.LOG.info("I am BetterIron at version " + Tags.VERSION);
 
+        // <editor-fold desc="Reflection | Iron material values">
         try {
-            java.lang.reflect.Field refField = ReflectionHelper
+            Field refField = ReflectionHelper
                 .findField(Item.ToolMaterial.class, "maxUses", "field_78002_g");
-            refField.setInt(Item.ToolMaterial.IRON, iron_toolDurability);
+            refField.setInt(Item.ToolMaterial.IRON, Config.iron_toolDurability);
 
             refField = ReflectionHelper.findField(Item.ToolMaterial.class, "enchantability", "field_78008_j");
             refField.setInt(Item.ToolMaterial.IRON, Config.iron_armorEnchantability);
 
             refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "maxDamageFactor", "field_78048_f");
-            refField.setInt(ItemArmor.ArmorMaterial.IRON, iron_armorDurability);
+            refField.setInt(ItemArmor.ArmorMaterial.IRON, Config.iron_armorDurability);
 
             System.out.println("[BetterIron] Iron material values set successfully.");
         } catch (Exception e) {
             System.out.println("[BetterIron] Couldn't set iron material values.");
             e.printStackTrace();
         }
+        // </editor-fold>
+        // <editor-fold desc="Reflection | Gold material damage values">
         if(Config.gold_swordDamage != 4.0f) try {
-            java.lang.reflect.Field refField = ReflectionHelper.findField(Item.ToolMaterial.class, "damageVsEntity", "field_78011_i");
+            Field refField = ReflectionHelper.findField(Item.ToolMaterial.class, "damageVsEntity", "field_78011_i");
             refField.setFloat(Item.ToolMaterial.GOLD, Config.gold_swordDamage - 4);
 
             refField = ReflectionHelper.findField(net.minecraft.item.ItemSword.class, "field_150934_a");
@@ -66,43 +69,104 @@ public class CommonProxy {
             System.out.println("[BetterIron] Couldn't set gold material damage values.");
             e.printStackTrace();
         }
-        if(!Arrays.equals(Config.chain_armorProtection, new int[]{2, 5, 4, 1})) {
-            if (Config.chain_armorProtection.length == 4) chainPr = true;
-            else System.out.println("[BetterIron] Chainmail material protection values in config are incorrect (needs to be 4 integers).");
-        }
-        if(chainPr || Config.chain_armorEnchantability != 12) try {
-            if(chainPr) {
-                java.lang.reflect.Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "damageReductionAmountArray", "field_78049_g");
-                refField.set(ItemArmor.ArmorMaterial.CHAIN, Config.chain_armorProtection);
+
+        if (!Arrays.equals(Config.gold_armorProtection, new int[]{2, 5, 4, 1})) goldPr = true;
+        if(goldPr || Config.gold_armorDurability != 7) try {
+            String debug = "[BetterIron] Gold armor ";
+            if(goldPr) {
+                Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "damageReductionAmountArray", "field_78049_g");
+                refField.set(ItemArmor.ArmorMaterial.GOLD, Config.gold_armorProtection);
+
+                debug += "material protection (1/2)";
             }
-            if(Config.chain_armorEnchantability != 12) {
-                java.lang.reflect.Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "enchantability", "field_78055_h");
-                refField.setInt(ItemArmor.ArmorMaterial.CHAIN, Config.chain_armorEnchantability);
+            if(Config.gold_armorDurability != 7) {
+                Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "maxDamageFactor", "field_78048_f");
+                refField.setInt(ItemArmor.ArmorMaterial.GOLD, Config.gold_armorDurability);
+
+                debug += (goldPr ? " and " : "") + "durability";
             }
-            System.out.println("[BetterIron] Chainmail material protection (1/2) and enchantability values set successfully.");
+            System.out.println(debug+" values set successfully.");
         } catch (Exception e) {
-            System.out.println("[BetterIron] Couldn't set chainmail material protection (1/2) and enchantability values.");
+            System.out.println("[BetterIron] Couldn't set golden armor values.");
             e.printStackTrace();
         }
+        // </editor-fold>
+        // <editor-fold desc="Reflection | Chainmail material values">
+        if(!Arrays.equals(Config.chain_armorProtection, new int[]{2, 5, 3, 1})) chainPr = true;
+        if(chainPr || Config.chain_armorEnchantability != 12 || Config.chain_armorDurability != 15) try {
+            String debug = "[BetterIron] Chainmail ";
+            boolean strBegan=false;
+            if(chainPr) {
+                Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "damageReductionAmountArray", "field_78049_g");
+                refField.set(ItemArmor.ArmorMaterial.CHAIN, Config.chain_armorProtection);
+
+                debug += "material protection (1/2)"; strBegan=true;
+            }
+            if(Config.chain_armorEnchantability != 12) {
+                Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "enchantability", "field_78055_h");
+                refField.setInt(ItemArmor.ArmorMaterial.CHAIN, Config.chain_armorEnchantability);
+
+                debug += (strBegan ? ", " : "") + "enchantability"; strBegan=true;
+            }
+            if(Config.chain_armorDurability != 15) {
+                Field refField = ReflectionHelper.findField(ItemArmor.ArmorMaterial.class, "maxDamageFactor", "field_78048_f");
+                refField.setInt(ItemArmor.ArmorMaterial.CHAIN, Config.chain_armorDurability);
+
+                debug += (strBegan ? " and " : "") + "durability";
+            }
+            System.out.println(debug+" values set successfully.");
+        } catch (Exception e) {
+            System.out.println("[BetterIron] Couldn't set chainmail armor values.");
+            e.printStackTrace();
+        }
+        // </editor-fold>
     }
 
     public void init(FMLInitializationEvent event) {
+        // <editor-fold desc="Gear durability recalculation">
+
+        //Iron gear
         Item[] items = { Items.iron_pickaxe, Items.iron_sword, Items.iron_axe, Items.iron_shovel, Items.iron_hoe, Items.shears };
-        for (Item tool : items) tool.setMaxDamage(iron_toolDurability);
+        for (Item tool : items) tool.setMaxDamage(Config.iron_toolDurability);
         Item[] armor = { Items.iron_helmet, Items.iron_chestplate, Items.iron_leggings, Items.iron_boots };
         var material = ItemArmor.ArmorMaterial.IRON;
         for (int i = 0; i < armor.length; i++) armor[i].setMaxDamage(material.getDurability(i));
 
-        if(chainPr) try {
-            java.lang.reflect.Field refField = ReflectionHelper.findField(ItemArmor.class, "damageReduceAmount", "field_77879_b");
-            armor = new Item[] {Items.chainmail_helmet, Items.chainmail_chestplate, Items.chainmail_leggings, Items.chainmail_boots};
+        //Chain and gold armor durability
+        Item[] chainarmor = { Items.chainmail_helmet, Items.chainmail_chestplate, Items.chainmail_leggings, Items.chainmail_boots };
+        Item[] goldarmor = new Item[] { Items.golden_helmet, Items.golden_chestplate, Items.golden_leggings, Items.golden_boots };
+        if(Config.chain_armorDurability != 15 || !Config.chain_armorDurabilityMultiplier) {
             material = ItemArmor.ArmorMaterial.CHAIN;
-            for (int i = 0; i < armor.length; i++) refField.setInt(armor[i], material.getDamageReductionAmount(i));
-            System.out.println("[BetterIron] Chainmail armor protection values (2/2) set successfully.");
+            for (int i = 0; i < chainarmor.length; i++)
+                chainarmor[i].setMaxDamage(Config.chain_armorDurabilityMultiplier ? material.getDurability(i) : Config.chain_armorDurability);
+        }
+        if(Config.gold_armorDurability != 7) {
+            material = ItemArmor.ArmorMaterial.GOLD;
+            for (int i = 0; i < goldarmor.length; i++)
+                goldarmor[i].setMaxDamage(material.getDurability(i));
+        }
+        // </editor-fold>
+
+        // <editor-fold desc="Reflection | Chainmail and golden armor protection values">
+        if(chainPr || goldPr) try {
+            Field refField = ReflectionHelper.findField(ItemArmor.class, "damageReduceAmount", "field_77879_b");
+            if(chainPr) {
+                material = ItemArmor.ArmorMaterial.CHAIN;
+                for (int i = 0; i < chainarmor.length; i++) refField.setInt(chainarmor[i], material.getDamageReductionAmount(i));
+                System.out.println("[BetterIron] Chainmail armor protection values (2/2) set successfully.");
+            }
+            if(goldPr) {
+                material = ItemArmor.ArmorMaterial.GOLD;
+                for (int i = 0; i < goldarmor.length; i++) refField.setInt(goldarmor[i], material.getDamageReductionAmount(i));
+                System.out.println("[BetterIron] Golden armor protection values (2/2) set successfully.");
+            }
         } catch (Exception e) {
-            System.out.println("[BetterIron] Couldn't set chainmail armor protection values (2/2).");
+            String debug = "[BetterIron] Couldn't set ";
+            if(chainPr) debug += "chainmail"; if(goldPr) debug += (chainPr ? " and " : "") + "golden";
+            System.out.println(debug + " armor protection values (2/2).");
             e.printStackTrace();
         }
+        // </editor-fold>
 
         Blocks.coal_ore.setHardness(Config.coalOreHardness);
         Items.golden_pickaxe.setHarvestLevel("pickaxe", Config.goldPickaxeLevel);
