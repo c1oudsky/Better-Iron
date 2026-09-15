@@ -4,8 +4,6 @@
   "required": true,
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "FurnaceTE",
-    "MixinEntityMinecart",
-    "MixinBlockRail"
+    "FurnaceTE"
   ]
 }

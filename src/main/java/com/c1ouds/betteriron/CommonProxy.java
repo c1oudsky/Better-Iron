@@ -1,5 +1,7 @@
 package com.c1ouds.betteriron;
 
+import com.c1ouds.betteriron.compat.C1STintegration;
+import com.c1ouds.betteriron.compat.TC4integration;
 import com.c1ouds.betteriron.utility.ItemMetaKey;
 import com.c1ouds.betteriron.IronFurnace.IronFurnaceBlock;
 import com.c1ouds.betteriron.IronFurnace.IronFurnaceTE;
@@ -135,10 +137,10 @@ public class CommonProxy {
         //Chain and gold armor durability
         Item[] chainarmor = { Items.chainmail_helmet, Items.chainmail_chestplate, Items.chainmail_leggings, Items.chainmail_boots };
         Item[] goldarmor = new Item[] { Items.golden_helmet, Items.golden_chestplate, Items.golden_leggings, Items.golden_boots };
-        if(Config.chain_armorDurability != 15 || !Config.chain_armorDurabilityMultiplier) {
+        if(Config.chain_armorDurability != 15) {
             material = ItemArmor.ArmorMaterial.CHAIN;
             for (int i = 0; i < chainarmor.length; i++)
-                chainarmor[i].setMaxDamage(Config.chain_armorDurabilityMultiplier ? material.getDurability(i) : Config.chain_armorDurability);
+                chainarmor[i].setMaxDamage(material.getDurability(i));
         }
         if(Config.gold_armorDurability != 7) {
             material = ItemArmor.ArmorMaterial.GOLD;
@@ -168,7 +170,6 @@ public class CommonProxy {
         }
         // </editor-fold>
 
-        Blocks.coal_ore.setHardness(Config.coalOreHardness);
         Items.golden_pickaxe.setHarvestLevel("pickaxe", Config.goldPickaxeLevel);
 
         Config.ironItems = new HashSet<ItemMetaKey>();
@@ -177,6 +178,7 @@ public class CommonProxy {
             TC4integration.applyThaumiumValue();
             TC4integration.addIron();
         }
+        if(Config.ReenchantGold) C1STintegration.addGoldTools();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(BetterIron.instance, new GuiHandler());
         iron_furnace = new IronFurnaceBlock();
@@ -190,15 +192,6 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent event) {
-        if (Config.PicksForGlass || Config.ForgeAxeForWood) {
-            for (Object obj : GameData.getBlockRegistry()) {
-                Block block = (Block) obj;
-                if (Config.PicksForGlass && block.getMaterial() == Material.glass)
-                    block.setHarvestLevel("pickaxe", 0);
-                else if (Config.ForgeAxeForWood && block.getMaterial() == Material.wood)
-                    block.setHarvestLevel("axe", 0);
-            }
-        }
     }
 
     public void serverStarting(FMLServerStartingEvent event) {}

@@ -21,21 +21,15 @@ public class Config {
     static public int[] chain_armorProtection;
     static public int chain_armorEnchantability;
     static public int chain_armorDurability;
-    static public boolean chain_armorDurabilityMultiplier;
     static public Set<ItemMetaKey> ironItems;
-    static public float coalOreHardness;
     static public int goldPickaxeLevel;
-    static public double MinecartSpeed;
-
-    static public boolean PicksForGlass;
-    static public boolean ForgeAxeForWood;
+    static public boolean ReenchantGold;
 
     public static void synchronizeConfiguration(File configFile) {
         Configuration configuration = new Configuration(configFile);
 
-        if (Loader.isModLoaded("Thaumcraft"))
-        { System.out.println("[BetterIron] Thaumcraft detected"); BetterIron.TC4 = true; }
-        else { System.out.println("[BetterIron] Thaumcraft not detected"); BetterIron.TC4 = false; }
+        if (Loader.isModLoaded("Thaumcraft")) BetterIron.TC4 = true; else BetterIron.TC4 = false;
+        if (Loader.isModLoaded("c1oudstweaks")) BetterIron.C1ST = true; else BetterIron.C1ST = false;
 
         iron_toolDurability = configuration.getInt("iron_toolsDurability", Configuration.CATEGORY_GENERAL,
             400, 1, Short.MAX_VALUE, "vanilla: 250");
@@ -65,26 +59,19 @@ public class Config {
         }
         chain_armorDurability = configuration.getInt("chain_armorDurability", Configuration.CATEGORY_GENERAL,
             15, 1, Short.MAX_VALUE,"chainmail armor durability multiplier. vanilla: 15");
-        chain_armorDurabilityMultiplier = configuration.getBoolean("chainmailArmorDurabilityCalculatedWithMultiplier", Configuration.CATEGORY_GENERAL,
-            true, "If set to false, chain_armorDurability will be read as literal durability for each chainmail armor piece. " +
-                "(In vanilla minecraft calculates different durability for armor pieces due to crafting cost logic)");
         chain_armorEnchantability = configuration.getInt("chain_armorEnchantability", Configuration.CATEGORY_GENERAL,
             12, 0, Short.MAX_VALUE, "Default value is vanilla");
         if (BetterIron.TC4) thaumium_toolDurability = configuration.getInt("thaumium_toolDurability",
             "Thaumcraft", 700, 0, Short.MAX_VALUE,
             "Set to 700 by default comparing to iron 400. (for comparison: elemental and diamond tiers are ~1500) Vanilla value is 400.");
-
-        coalOreHardness = configuration.getFloat("coalOreHardness", Configuration.CATEGORY_GENERAL,
-            3.0F, 0.1F, 20.0F,"Default value is vanilla");
         goldPickaxeLevel = configuration.getInt("goldPickaxeLevel", Configuration.CATEGORY_GENERAL,
             BetterIron.TC4 ? 3 : 0, 0, 3,
             "Golden pickaxe is set to diamond harvest level (3) if thaumcraft is present to balance gold tier. Vanilla value is 0.");
-        PicksForGlass = configuration.getBoolean("assignPickaxesForGlass", "Experimental", false,
-            "Assigns pickaxe as efficient tool type for all blocks with glass material. (Disable if unintended blocks now break with low level pickaxes)");
-        ForgeAxeForWood = configuration.getBoolean("AxeForAllWoodMaterial", "Experimental", false,
-            "Assigns axe as efficient tool type for all blocks with wood material. (Disable if unintended blocks now break with axes)");
-        MinecartSpeed = configuration.getFloat("MinecartsSpeed", Configuration.CATEGORY_GENERAL, 0.4F, 0.1F, 0.75F,
-            "Minecarts' maximum speed (values in [3.999, 4.001] range won't change it from vanilla behavior). Powered rails acceleration is tweaked accordingly.");
+        ReenchantGold = configuration.getBoolean("ReenchantableGoldGear", Configuration.CATEGORY_GENERAL, BetterIron.C1ST,
+            "Allows golden gear to be re-enchanted in enchanting table. Requires C1oudS Tweaks.");
+        if(ReenchantGold && !BetterIron.C1ST) {
+            System.out.println("[BetterIron]: C1oudS Tweaks isn't detected! Resetting ReenchantableGoldTools to false.");
+        }
 
         if (configuration.hasChanged()) {
             configuration.save();

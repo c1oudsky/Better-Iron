@@ -35,5 +35,6 @@
  */
 dependencies {
     //runtimeOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.7.69-GTNH:dev")
-    compileOnly(files("libs/Thaumcraft-1.7.10-4.2.3.5.jar"))
+    compileOnly(rfg.deobf(files("libs/Thaumcraft-1.7.10-4.2.3.5.jar")))
+    compileOnly(files("libs/c1oudstweaks-latest-dev.jar"))
 }

@@ -22,6 +22,7 @@ public class BetterIron {
     public static final Logger LOG = LogManager.getLogger(MODID);
 
     static public boolean TC4;
+    static public boolean C1ST;
 
     @SidedProxy(clientSide = "com.c1ouds.betteriron.ClientProxy", serverSide = "com.c1ouds.betteriron.CommonProxy")
     public static CommonProxy proxy;

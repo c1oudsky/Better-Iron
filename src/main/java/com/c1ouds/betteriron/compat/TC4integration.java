@@ -1,5 +1,6 @@
-package com.c1ouds.betteriron;
+package com.c1ouds.betteriron.compat;
 
+import com.c1ouds.betteriron.Config;
 import com.c1ouds.betteriron.utility.ItemMetaKey;
 import static com.c1ouds.betteriron.Config.thaumium_toolDurability;
 
