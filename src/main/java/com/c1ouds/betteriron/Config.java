@@ -34,7 +34,7 @@ public class Config {
         iron_toolDurability = configuration.getInt("iron_toolsDurability", Configuration.CATEGORY_GENERAL,
             400, 1, Short.MAX_VALUE, "vanilla: 250");
         iron_armorDurability = configuration.getInt("iron_armorDurability", Configuration.CATEGORY_GENERAL,
-            20, 1, Short.MAX_VALUE, "Iron armor durability multiplier. vanilla: 15");
+            20, 1, 2047, "Iron armor durability multiplier. vanilla: 15");
         iron_armorEnchantability = configuration.getInt("iron_armorEnchantability", Configuration.CATEGORY_GENERAL,
             14, 0, Short.MAX_VALUE, "Default value is vanilla");
         gold_swordDamage = configuration.getFloat("gold_swordDamage", Configuration.CATEGORY_GENERAL,
@@ -44,21 +44,16 @@ public class Config {
             false, "Tweak Zombie Pigmen's damage so it stays the same even if you change golden swords' damage." +
                 " If set to false, Zombie Pigmen's damage will depend on golden sword set damage value. (Note: with golden sword damage changed " +
                 "and this set to true, already spawned pigmen will retain their altered damage even if you disable the features or delete the mod.)");
-        gold_armorProtection = configuration.get(Configuration.CATEGORY_GENERAL, "gold_armorProtection",
-            BetterIron.TC4 ? new int[] {4,7,6,3} : new int[] {2,5,3,1},"Golden armor is set to diamond tier protection if thaumcraft is present " +
-                "to balance gold tier. Vanilla values are 2,5,3,1.").getIntList();
+        gold_armorProtection = GetIntArray("gold_armorProtection", Configuration.CATEGORY_GENERAL, new int[] {4,7,6,3},
+            "Golden armor is set to diamond tier protection if thaumcraft is present to balance gold tier. Vanilla values are 2,5,3,1.", configuration);
         gold_armorDurability = configuration.getInt("gold_armorDurability", Configuration.CATEGORY_GENERAL,
-            BetterIron.TC4 ? 3 : 7, 1, Short.MAX_VALUE, "Golden armor durability is set to about be as low as golden tools if " +
+            BetterIron.TC4 ? 3 : 7, 1, 2047, "Golden armor durability is set to about be as low as golden tools if " +
                 "thaumcraft is present to balance gold tier. Vanilla value is 7.");
 
-        chain_armorProtection = configuration.get(Configuration.CATEGORY_GENERAL, "chain_armorProtection", new int[] {2,5,4,1},
-            "Default values are vanilla").getIntList();
-        if (chain_armorProtection.length != 4) {
-            System.out.println("[BetterIron] Chainmail material protection values in config are incorrect (needs to be 4 integers).");
-            chain_armorProtection = new int[]{2, 5, 4, 1};
-        }
+        chain_armorProtection = GetIntArray("chain_armorProtection", Configuration.CATEGORY_GENERAL, new int[] {2,5,4,1},
+            "Default values are vanilla", configuration);
         chain_armorDurability = configuration.getInt("chain_armorDurability", Configuration.CATEGORY_GENERAL,
-            15, 1, Short.MAX_VALUE,"chainmail armor durability multiplier. vanilla: 15");
+            15, 1, 2047,"chainmail armor durability multiplier. vanilla: 15");
         chain_armorEnchantability = configuration.getInt("chain_armorEnchantability", Configuration.CATEGORY_GENERAL,
             12, 0, Short.MAX_VALUE, "Default value is vanilla");
         if (BetterIron.TC4) thaumium_toolDurability = configuration.getInt("thaumium_toolDurability",
@@ -68,7 +63,7 @@ public class Config {
             BetterIron.TC4 ? 3 : 0, 0, 3,
             "Golden pickaxe is set to diamond harvest level (3) if thaumcraft is present to balance gold tier. Vanilla value is 0.");
         ReenchantGold = configuration.getBoolean("ReenchantableGoldGear", Configuration.CATEGORY_GENERAL, BetterIron.C1ST,
-            "Allows golden gear to be re-enchanted in enchanting table. Requires C1oudS Tweaks.");
+            "Allows golden gear to be re-enchanted in enchanting table. Requires C1oudS Tweaks mod with re-enchanting config enabled.");
         if(ReenchantGold && !BetterIron.C1ST) {
             System.out.println("[BetterIron]: C1oudS Tweaks isn't detected! Resetting ReenchantableGoldTools to false.");
         }
@@ -76,5 +71,13 @@ public class Config {
         if (configuration.hasChanged()) {
             configuration.save();
         }
+    }
+    static int[] GetIntArray(String key, String category, int[] fallbackArray, String comment, Configuration configuration) {
+        int[] currentArray = configuration.get(category, key, fallbackArray, comment).getIntList();
+        if (currentArray.length != fallbackArray.length) {
+            System.out.println("[C1oudS Tweaks] wrong "+key+" array! Must consist of "+fallbackArray.length+" integers. Using default values");
+            return fallbackArray;
+        }
+        return currentArray;
     }
 }

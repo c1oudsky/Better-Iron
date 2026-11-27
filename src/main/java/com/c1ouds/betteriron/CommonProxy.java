@@ -36,7 +36,7 @@ public class CommonProxy {
 
     public void preInit(FMLPreInitializationEvent event) {
         Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
-        //BetterIron.LOG.info("I am BetterIron at version " + Tags.VERSION);
+        BetterIron.LOG.info("current version is " + Tags.VERSION);
 
         // <editor-fold desc="Reflection | Iron material values">
         try {
